@@ -1,0 +1,1501 @@
+<!DOCTYPE html>
+
+<html lang="fr">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>Menu - L'Orientale</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<style>
+    :root{--accent:#0b3b66;--muted:#6b7280;--bg:#f7f9fb;}
+    *{box-sizing:border-box}
+    body{font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial; margin:0; background:var(--bg); color:#111}
+
+    /* Header */
+    header.site-header{position:sticky;top:0;z-index:120;background:linear-gradient(90deg, #ffffff 0%, #edf6ff 50%, #e6f0fa 100%);box-shadow:0 6px 18px rgba(11,59,102,0.06);}
+    .site-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:12px 20px;gap:16px}
+    .brand{display:flex;align-items:center;gap:12px;color:var(--accent);text-decoration:none}
+    .brand .logo{width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,var(--accent),#1f6aa5);display:inline-flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:18px;box-shadow:0 6px 18px rgba(11,59,102,0.08)}
+    .brand h1{font-size:20px;margin:0;animation:pulse 2100ms infinite ease-in-out;transform-origin:center}
+    @keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.03)}100%{transform:scale(1)}}
+
+    .cart-area{position:relative;display:flex;align-items:center;gap:12px}
+    .cart-btn{height:48px;width:48px;border-radius:12px;border:0;background:transparent;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+    .cart-btn svg{width:22px;height:22px;stroke:var(--accent)}
+    .cart-badge{position:absolute;right:-6px;top:-6px;background:var(--accent);color:white;font-weight:700;font-size:12px;padding:4px 6px;border-radius:999px;min-width:20px;text-align:center;box-shadow:0 6px 14px rgba(11,59,102,0.14)}
+
+    /* Cart panel */
+    .cart-panel{position:absolute;right:0;top:64px;width:360px;max-width:calc(100vw - 24px);background:white;border-radius:12px;padding:12px;box-shadow:0 24px 48px rgba(11,59,102,0.12);display:none;flex-direction:column;gap:12px}
+    .cart-panel.active{display:flex}
+    .cart-panel h2{margin:0;font-size:18px;color:var(--accent)}
+    .cart-items{list-style:none;margin:0;padding:0;max-height:280px;overflow:auto;display:flex;flex-direction:column;gap:8px}
+    .cart-item{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;padding:8px;border-radius:8px;background:#fbfdff;border:1px solid rgba(11,59,102,0.04)}
+    .cart-item .meta{flex:1}
+    .cart-item .meta .name{font-weight:600}
+    .cart-item .meta .comment{font-size:13px;color:var(--muted);margin-top:4px}
+    .cart-item .controls{display:flex;align-items:center;gap:8px}
+    .qty-btn{background:transparent;border:1px solid rgba(11,59,102,0.08);padding:6px 8px;border-radius:8px;cursor:pointer}
+    .remove-btn{background:transparent;border:0;color:#c23;cursor:pointer;font-weight:700}
+
+    .cart-total{display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:16px;padding-top:6px;border-top:1px dashed rgba(11,59,102,0.06)}
+
+    .cart-actions{display:flex;gap:8px;justify-content:space-between}
+    .cart-actions button{flex:1;padding:8px 10px;border-radius:8px;border:0;cursor:pointer;font-weight:700}
+    .confirm-btn{background:var(--accent);color:white}
+    .resume-btn{background:#ff9f1c;color:white}
+    .cancel-btn{background:#ef4444;color:white}
+
+    /* Popup */
+    .popup{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.45);z-index:220;padding:20px}
+    .popup.active{display:flex}
+    .popup-card{background:white;border-radius:12px;padding:18px;max-width:540px;width:100%;box-shadow:0 40px 80px rgba(11,59,102,0.18)}
+    .popup-card h3{margin:0 0 8px;color:var(--accent)}
+    .popup-list{max-height:320px;overflow:auto;margin:8px 0;padding:0 0 8px 0}
+    .popup-list li{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed rgba(0,0,0,0.06)}
+    .popup-footer{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+    .popup-footer .phone-note{font-weight:700;color:var(--accent)}
+
+    /* MENU layout */
+    main#menu{max-width:1200px;margin:18px auto;padding:0 18px 80px;}
+    .menu-item{margin-bottom:18px;padding:12px;background:white;border-radius:10px;box-shadow:0 6px 20px rgba(11,59,102,0.04);padding:16px}
+    .menu-item h3{margin:0 0 12px;color:var(--accent)}
+
+    /* dish grid - each .dish contains icon + info */
+    .dish{display:grid;grid-template-columns:48px 1fr;gap:12px;align-items:center;padding:10px 0;border-bottom:1px dashed rgba(11,59,102,0.04)}
+    .dish:last-child{border-bottom:0}
+    .dish .icon svg{width:44px;height:44px;stroke:var(--accent);display:block}
+    .info .plat-nom{margin:0;font-weight:700}
+    .info .price{display:inline-block;margin-top:6px;font-weight:700;color:var(--accent)}
+    .info p{margin:6px 0 0;color:var(--muted)}
+
+    .btn-add{margin-top:8px;padding:8px 10px;background:var(--accent);color:white;border:0;border-radius:8px;cursor:pointer}
+
+    /* responsive */
+    @media (max-width:800px){
+      .site-inner{padding:10px}
+      .cart-panel{right:10px;left:10px;top:70px;width:auto}
+    }
+    @media (max-width:480px){
+      .dish{grid-template-columns:40px 1fr}
+      .brand h1{font-size:18px}
+      .site-inner{padding:10px}
+    }
+  
+.category-filter {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 20px auto;
+  justify-content: center;
+}
+.category-filter button {
+  background: rgba(11, 59, 102, 0.8);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+}
+.category-filter button:hover {
+  background: rgba(11,59,102,1);
+}
+.category-filter button.active {
+  background: #e50914;
+  color: white;
+}
+.menu-item {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.menu-item.hide {
+  opacity: 0;
+  transform: scale(0.95);
+}
+
+/* Netflix-style category filter improvements */
+.category-filter {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 18px auto;
+  justify-content: center;
+  padding: 6px 12px;
+  max-width: 1100px;
+}
+.category-filter button {
+  background: rgba(11, 59, 102, 0.08);
+  color: #0b3b66;
+  border: 1px solid rgba(11,59,102,0.08);
+  padding: 8px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: transform 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+  font-size: 14px;
+  white-space: nowrap;
+}
+.category-filter button:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(11,59,102,0.06); }
+.category-filter button.active { background: #e50914; color: white; border-color: #e50914; transform: translateY(-2px); }
+
+/* hide animation for items */
+.menu-item { transition: opacity 240ms ease, transform 240ms ease; will-change: opacity, transform; }
+.menu-item.hide { opacity: 0; transform: translateY(6px) scale(0.995); pointer-events: none; }
+</style>
+</head>
+<body>
+<header class="site-header" role="banner">
+<div class="site-inner">
+<a aria-label="Accueil - L'Orientale" class="brand" href="#menu">
+<div aria-hidden="true" class="logo">Lo</div>
+<h1>L'Orientale</h1>
+</a>
+<div aria-hidden="false" class="cart-area">
+<button aria-label="Voir le panier" class="cart-btn" id="cartBtn" title="Panier">
+<svg fill="none" height="22" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" width="22" xmlns="http://www.w3.org/2000/svg"><circle cx="9" cy="20" r="1"></circle><circle cx="19" cy="20" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+</button>
+<div aria-live="polite" class="cart-badge" id="cartCount">0</div>
+<div aria-label="Panier" aria-modal="false" class="cart-panel" id="cartPanel" role="dialog">
+<h2>Votre Panier</h2>
+<ul class="cart-items" id="cartItems"></ul>
+<div class="cart-total"><span>Total</span><span id="cartTotal">0 FCFA</span></div>
+<div class="cart-actions">
+<button class="confirm-btn" id="confirmOrder">Confirmer</button>
+<button class="resume-btn" id="resumeOrder">Reprendre</button>
+<button class="cancel-btn" id="cancelOrder">Annuler</button>
+</div>
+</div>
+</div>
+</div>
+</header><div class="category-filter" id="categoryFilter"></div>
+<main id="menu">
+<!-- Exemple de plats -->
+<div class="menu-item petit_dejeuner"><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M3 11h18"></path><path d="M5 11c0 3-2 4-2 6h18c0-2-2-3-2-6"></path><circle cx="12" cy="6" r="3"></circle></svg></div><div class="info">
+<h3 class="plat-nom">Moussabaha</h3>
+<span class="price">5000 FCFA</span>
+<p>Purée de pois chiches et pois chiches tièdes.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M3 11h18"></path><path d="M5 11c0 3-2 4-2 6h18c0-2-2-3-2-6"></path><circle cx="12" cy="6" r="3"></circle></svg></div><div class="info">
+<h3 class="plat-nom">Foul</h3>
+<span class="price">5000 FCFA</span>
+<p>Purée de fèves et pois chiches et citron.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M3 11h18"></path><path d="M5 11c0 3-2 4-2 6h18c0-2-2-3-2-6"></path><circle cx="12" cy="6" r="3"></circle></svg></div><div class="info">
+<h3 class="plat-nom">Fateh Homos</h3>
+<span class="price">5000 FCFA</span>
+<p>Pain grillé, yaourt et pois chiches.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M3 11h18"></path><path d="M5 11c0 3-2 4-2 6h18c0-2-2-3-2-6"></path><circle cx="12" cy="6" r="3"></circle></svg></div><div class="info">
+<h3 class="plat-nom">Fatéte viande</h3>
+<span class="price">5500 FCFA</span>
+<p>Pain grillé, yaourt et pois chiches.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M3 11h18"></path><path d="M5 11c0 3-2 4-2 6h18c0-2-2-3-2-6"></path><circle cx="12" cy="6" r="3"></circle></svg></div><div class="info">
+<h3 class="plat-nom">Omelette nature</h3>
+<span class="price">3500 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M3 11h18"></path><path d="M5 11c0 3-2 4-2 6h18c0-2-2-3-2-6"></path><circle cx="12" cy="6" r="3"></circle></svg></div><div class="info">
+<h3 class="plat-nom">Omelette au fromage</h3>
+<span class="price">4500 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M3 11h18"></path><path d="M5 11c0 3-2 4-2 6h18c0-2-2-3-2-6"></path><circle cx="12" cy="6" r="3"></circle></svg></div><div class="info">
+<h3 class="plat-nom">Omelette aux champignons</h3>
+<span class="price">4500 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M3 11h18"></path><path d="M5 11c0 3-2 4-2 6h18c0-2-2-3-2-6"></path><circle cx="12" cy="6" r="3"></circle></svg></div><div class="info">
+<h3 class="plat-nom">Omelette à la viande</h3>
+<span class="price">5500 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M3 11h18"></path><path d="M5 11c0 3-2 4-2 6h18c0-2-2-3-2-6"></path><circle cx="12" cy="6" r="3"></circle></svg></div><div class="info">
+<h3 class="plat-nom">Omelette espagnole</h3>
+<span class="price">5500 FCFA</span>
+<p>Poivrons, tomates, oignons.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M3 11h18"></path><path d="M5 11c0 3-2 4-2 6h18c0-2-2-3-2-6"></path><circle cx="12" cy="6" r="3"></circle></svg></div><div class="info">
+<h3 class="plat-nom">Labné</h3>
+<span class="price">4500 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article></div>
+<div class="menu-item StarterDuChefs"><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M4 21v-7"></path><path d="M20 21v-7"></path><path d="M4 10h16"></path><path d="M7 6h10"></path></svg></div><div class="info">
+<h3 class="plat-nom">Dynamit Shrimp</h3>
+<span class="price">5000 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M4 21v-7"></path><path d="M20 21v-7"></path><path d="M4 10h16"></path><path d="M7 6h10"></path></svg></div><div class="info">
+<h3 class="plat-nom">Cheese ball(5 pièces)</h3>
+<span class="price">4500 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M4 21v-7"></path><path d="M20 21v-7"></path><path d="M4 10h16"></path><path d="M7 6h10"></path></svg></div><div class="info">
+<h3 class="plat-nom">Mozzarela sticks(5 pièces)</h3>
+<span class="price">5500 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M4 21v-7"></path><path d="M20 21v-7"></path><path d="M4 10h16"></path><path d="M7 6h10"></path></svg></div><div class="info">
+<h3 class="plat-nom">Crevettes panées(5 pièces)</h3>
+<span class="price">5500 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article></div>
+<div class="menu-item manaiche"><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"></path><path d="M3 12h18"></path></svg></div><div class="info">
+<h3 class="plat-nom">Manaiche au zaatar</h3>
+<span class="price">2000 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"></path><path d="M3 12h18"></path></svg></div><div class="info">
+<h3 class="plat-nom">Manaiche Mozzarella</h3>
+<span class="price">3000 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"></path><path d="M3 12h18"></path></svg></div><div class="info">
+<h3 class="plat-nom">Manaiche Mozzarella et thym</h3>
+<span class="price">3500 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"></path><path d="M3 12h18"></path></svg></div><div class="info">
+<h3 class="plat-nom">Manaiche Akawi</h3>
+<span class="price">3500 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"></path><path d="M3 12h18"></path></svg></div><div class="info">
+<h3 class="plat-nom">Manaiche aux deux fromages</h3>
+<span class="price">3500 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"></path><path d="M3 12h18"></path></svg></div><div class="info">
+<h3 class="plat-nom">Manaiche Mozzarella et Jambon de boeuf</h3>
+<span class="price">4000 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"></path><path d="M3 12h18"></path></svg></div><div class="info">
+<h3 class="plat-nom">Manaiche à la viande</h3>
+<span class="price">3000 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"></path><path d="M3 12h18"></path></svg></div><div class="info">
+<h3 class="plat-nom">Manaiche Mozzarella et viande</h3>
+<span class="price">4000 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"></path><path d="M3 12h18"></path></svg></div><div class="info">
+<h3 class="plat-nom">Manaiche aux légumes</h3>
+<span class="price">2500 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"></path><path d="M3 12h18"></path></svg></div><div class="info">
+<h3 class="plat-nom">Manaiche kéchéke</h3>
+<span class="price">3000 FCFA</span>
+<p>Yaourt au blé concassé, tomates oignons, huile d'olive</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"></path><path d="M3 12h18"></path></svg></div><div class="info">
+<h3 class="plat-nom">Manaiche labné</h3>
+<span class="price">2000 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"></path><path d="M3 12h18"></path></svg></div><div class="info">
+<h3 class="plat-nom">Manaiche doublex</h3>
+<span class="price">2000 FCFA</span>
+<p>Fromage akawi, zaatar</p>
+<button class="btn-add">Commander</button>
+</div></article></div>
+<div class="menu-item MezzeFroid"><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><rect height="14" rx="2" width="20" x="2" y="3"></rect><path d="M8 21h8"></path></svg></div><div class="info">
+<h3 class="plat-nom">Homos</h3>
+<span class="price">4500 FCFA</span>
+<p>Purée de pois chiches à la crème sésame.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><rect height="14" rx="2" width="20" x="2" y="3"></rect><path d="M8 21h8"></path></svg></div><div class="info">
+<h3 class="plat-nom">Homos orientale</h3>
+<span class="price">4500 FCFA</span>
+<p>Purée de pois chiches à la crème sésame.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><rect height="14" rx="2" width="20" x="2" y="3"></rect><path d="M8 21h8"></path></svg></div><div class="info">
+<h3 class="plat-nom">Homos pesto</h3>
+<span class="price">5000 FCFA</span>
+<p>Purée de pois chiches à la crème sésame, pesto.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><rect height="14" rx="2" width="20" x="2" y="3"></rect><path d="M8 21h8"></path></svg></div><div class="info">
+<h3 class="plat-nom">Homos beiruti</h3>
+<span class="price">4500 FCFA</span>
+<p>Purée de pois chiches à la crème sésame, persil, épices.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><rect height="14" rx="2" width="20" x="2" y="3"></rect><path d="M8 21h8"></path></svg></div><div class="info">
+<h3 class="plat-nom">Moutabal</h3>
+<span class="price">4500 FCFA</span>
+<p>Purée d'aubergines à la crème sésame.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><rect height="14" rx="2" width="20" x="2" y="3"></rect><path d="M8 21h8"></path></svg></div><div class="info">
+<h3 class="plat-nom">Baba ghanouj</h3>
+<span class="price">4500 FCFA</span>
+<p>Purée d'aubergines  à la crème sésame.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><rect height="14" rx="2" width="20" x="2" y="3"></rect><path d="M8 21h8"></path></svg></div><div class="info">
+<h3 class="plat-nom">Feuilles des vignes</h3>
+<span class="price">4500 FCFA</span>
+<p>Farcies aux riz et légumes.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><rect height="14" rx="2" width="20" x="2" y="3"></rect><path d="M8 21h8"></path></svg></div><div class="info">
+<h3 class="plat-nom">Aubergines à la mélasse de grénadine</h3>
+<span class="price">4500 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><rect height="14" rx="2" width="20" x="2" y="3"></rect><path d="M8 21h8"></path></svg></div><div class="info">
+<h3 class="plat-nom">Lahmé madoua</h3>
+<span class="price">6500 FCFA</span>
+<p>Tartare de viande.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><rect height="14" rx="2" width="20" x="2" y="3"></rect><path d="M8 21h8"></path></svg></div><div class="info">
+<h3 class="plat-nom">Fraké</h3>
+<span class="price">6000 FCFA</span>
+<p>Viande crue pilée, blé concassé.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><rect height="14" rx="2" width="20" x="2" y="3"></rect><path d="M8 21h8"></path></svg></div><div class="info">
+<h3 class="plat-nom">Kibbé niyyé</h3>
+<span class="price">6000 FCFA</span>
+<p>Viande crue pilée aux épices.</p>
+<button class="btn-add">Commander</button>
+</div></article></div>
+<div class="menu-item MezzeChaud"><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M3 3h18v8H3z"></path><path d="M8 11v10"></path><path d="M16 11v10"></path></svg></div><div class="info">
+<h3 class="plat-nom">Sojok</h3>
+<span class="price">5000 FCFA</span>
+<p>Saucisses de viande de boeuf éppicées.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M3 3h18v8H3z"></path><path d="M8 11v10"></path><path d="M16 11v10"></path></svg></div><div class="info">
+<h3 class="plat-nom">Makanik</h3>
+<span class="price">5000 FCFA</span>
+<p>Merguez épicées à l'orientale.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M3 3h18v8H3z"></path><path d="M8 11v10"></path><path d="M16 11v10"></path></svg></div><div class="info">
+<h3 class="plat-nom">Roulé au fromage(5 pièces)</h3>
+<span class="price">5000 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M3 3h18v8H3z"></path><path d="M8 11v10"></path><path d="M16 11v10"></path></svg></div><div class="info">
+<h3 class="plat-nom">Fatayer Viande(5 pièces)</h3>
+<span class="price">4000 FCFA</span>
+<p>Purée d'aubergines et la crème de sésame.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M3 3h18v8H3z"></path><path d="M8 11v10"></path><path d="M16 11v10"></path></svg></div><div class="info">
+<h3 class="plat-nom">Fatayer épinards(5 pièces)</h3>
+<span class="price">4500 FCFA</span>
+<p>Chaussons farcis aux épinards.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M3 3h18v8H3z"></path><path d="M8 11v10"></path><path d="M16 11v10"></path></svg></div><div class="info">
+<h3 class="plat-nom">Batata harra</h3>
+<span class="price">4000 FCFA</span>
+<p>Pomme de terre sautées aux  épices.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M3 3h18v8H3z"></path><path d="M8 11v10"></path><path d="M16 11v10"></path></svg></div><div class="info">
+<h3 class="plat-nom">Kibbés frits(5 pièces)</h3>
+<span class="price">4500 FCFA</span>
+<p>Croquettes de blé concassé à la viande.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M3 3h18v8H3z"></path><path d="M8 11v10"></path><path d="M16 11v10"></path></svg></div><div class="info">
+<h3 class="plat-nom">Homos à la viande</h3>
+<span class="price">6000 FCFA</span>
+<p>Purée  de pois chiches à la crème sésame et viande hachée.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M3 3h18v8H3z"></path><path d="M8 11v10"></path><path d="M16 11v10"></path></svg></div><div class="info">
+<h3 class="plat-nom">Haloum grillé</h3>
+<span class="price">6500 FCFA</span>
+<p>Fromage oriental grillé.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M3 3h18v8H3z"></path><path d="M8 11v10"></path><path d="M16 11v10"></path></svg></div><div class="info">
+<h3 class="plat-nom">Arayés viande</h3>
+<span class="price">6000 FCFA</span>
+<p>Pain libanais grillé farci à la viande.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M3 3h18v8H3z"></path><path d="M8 11v10"></path><path d="M16 11v10"></path></svg></div><div class="info">
+<h3 class="plat-nom">Falafels (5 pièces)</h3>
+<span class="price">4000 FCFA</span>
+<p>Boulettes de pois chiches et légumes.</p>
+<button class="btn-add">Commander</button>
+</div></article></div>
+<div class="menu-item Salades"><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l3 7h6l-5 4 2 7-6-4-6 4 2-7-5-4h6z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Taboulet</h3>
+<span class="price">5000 FCFA</span>
+<p>Iceberg, Persil, Blé concasse, Tomates, Menthe, Oignons, Huile d'olive et Citron.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l3 7h6l-5 4 2 7-6-4-6 4 2-7-5-4h6z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Fatouche</h3>
+<span class="price">5000 FCFA</span>
+<p>Iceberg de crudités au sumac et pain grillé.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l3 7h6l-5 4 2 7-6-4-6 4 2-7-5-4h6z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Salade césar</h3>
+<span class="price">5500 FCFA</span>
+<p>Iceberg, poulet, parmesan, croutons, sauce césar aux anchois.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l3 7h6l-5 4 2 7-6-4-6 4 2-7-5-4h6z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Salade  grecque</h3>
+<span class="price">5000 FCFA</span>
+<p>Iceberg, Tomate, Poivrons, Feta, Concombres, olives noires, Sauce vinaigrette.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l3 7h6l-5 4 2 7-6-4-6 4 2-7-5-4h6z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Salade avocats aux crevettes</h3>
+<span class="price">6500 FCFA</span>
+<p>Iceberg, crevettes, avocats et sauce cocktail.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l3 7h6l-5 4 2 7-6-4-6 4 2-7-5-4h6z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Crabe salade</h3>
+<span class="price">6500 FCFA</span>
+<p>Iceberg, Concombre, Carotte, Avocat, Champignon, Mangue, Sauce Thai à l'orange.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l3 7h6l-5 4 2 7-6-4-6 4 2-7-5-4h6z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Salade orientale</h3>
+<span class="price">7000 FCFA</span>
+<p>Iceberg, Quinoa, Poulet grillé, Tomate cerise, Concombre, Avocat, Raisin sec, Roquette, Amendes grillées, Sauce Balsamic.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l3 7h6l-5 4 2 7-6-4-6 4 2-7-5-4h6z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Salade Thai</h3>
+<span class="price">9000 FCFA</span>
+<p>Steak viande grillé, Iceberg, Avocat, Carotte, Pomme, Tomate cirse, Sauce Thai.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l3 7h6l-5 4 2 7-6-4-6 4 2-7-5-4h6z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Asian salade</h3>
+<span class="price">9000 FCFA</span>
+<p>Blanc de poulet, Iceberg, Avocat, Tomate, Cerise, Concombre, Sauce Asian.</p>
+<button class="btn-add">Commander</button>
+</div></article></div>
+<div class="menu-item SpécialesWings"><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M3 7h18"></path><path d="M5 7v10c0 1 1 2 2 2h10c1 0 2-1 2-2V7"></path></svg></div><div class="info">
+<h3 class="plat-nom">Ailes de poulet panées</h3>
+<span class="price">7000 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M3 7h18"></path><path d="M5 7v10c0 1 1 2 2 2h10c1 0 2-1 2-2V7"></path></svg></div><div class="info">
+<h3 class="plat-nom">BBQ Wings</h3>
+<span class="price">7000 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M3 7h18"></path><path d="M5 7v10c0 1 1 2 2 2h10c1 0 2-1 2-2V7"></path></svg></div><div class="info">
+<h3 class="plat-nom">Provencal Wings</h3>
+<span class="price">7000 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M3 7h18"></path><path d="M5 7v10c0 1 1 2 2 2h10c1 0 2-1 2-2V7"></path></svg></div><div class="info">
+<h3 class="plat-nom">Ailes de poulets grillés</h3>
+<span class="price">7000 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article></div>
+<div class="menu-item Riz"><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><ellipse cx="12" cy="7" rx="9" ry="3"></ellipse><path d="M3 10v7a3 3 0 0 0 3 3h12a3 3 0 0 0 3-3v-7"></path></svg></div><div class="info">
+<h3 class="plat-nom">Riz à la viande</h3>
+<span class="price">7000 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><ellipse cx="12" cy="7" rx="9" ry="3"></ellipse><path d="M3 10v7a3 3 0 0 0 3 3h12a3 3 0 0 0 3-3v-7"></path></svg></div><div class="info">
+<h3 class="plat-nom">Riz au poulet</h3>
+<span class="price">6000 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article></div>
+<div class="menu-item Pizzas"><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M21 3L3 12l9 9 9-18z"></path><circle cx="12" cy="12" r="2"></circle><circle cx="8" cy="16" r="1"></circle></svg></div><div class="info">
+<h3 class="plat-nom">Reine</h3>
+<span class="price">6500 FCFA</span>
+<p>Sauce tomate, Jambon de Boeuf, Champignons, Mozzarella, Olives noires.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M21 3L3 12l9 9 9-18z"></path><circle cx="12" cy="12" r="2"></circle><circle cx="8" cy="16" r="1"></circle></svg></div><div class="info">
+<h3 class="plat-nom">Margarita</h3>
+<span class="price">5500 FCFA</span>
+<p>Sauce tomate, Mozzarela, Olives noires.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M21 3L3 12l9 9 9-18z"></path><circle cx="12" cy="12" r="2"></circle><circle cx="8" cy="16" r="1"></circle></svg></div><div class="info">
+<h3 class="plat-nom">Végétarienne</h3>
+<span class="price">6000 FCFA</span>
+<p>Sauce tomate, Champignons, Courgettes, Oignons, Poivres, Mais </p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M21 3L3 12l9 9 9-18z"></path><circle cx="12" cy="12" r="2"></circle><circle cx="8" cy="16" r="1"></circle></svg></div><div class="info">
+<h3 class="plat-nom">La neptune</h3>
+<span class="price">6000 FCFA</span>
+<p>Sauce tomate, thon, Fromage, Capres.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M21 3L3 12l9 9 9-18z"></path><circle cx="12" cy="12" r="2"></circle><circle cx="8" cy="16" r="1"></circle></svg></div><div class="info">
+<h3 class="plat-nom">L'Orientale</h3>
+<span class="price">6500 FCFA</span>
+<p>Sauce tomate, Sojjok, Tomates, Mozzarela.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M21 3L3 12l9 9 9-18z"></path><circle cx="12" cy="12" r="2"></circle><circle cx="8" cy="16" r="1"></circle></svg></div><div class="info">
+<h3 class="plat-nom">La fermière</h3>
+<span class="price">8000 FCFA</span>
+<p>Sauce tomate, Poulet, Fromage, Olives.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M21 3L3 12l9 9 9-18z"></path><circle cx="12" cy="12" r="2"></circle><circle cx="8" cy="16" r="1"></circle></svg></div><div class="info">
+<h3 class="plat-nom">La crustacée</h3>
+<span class="price">5500 FCFA</span>
+<p>Sauce tomate, Crevettes, Oignons, Fromage, Olives.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M21 3L3 12l9 9 9-18z"></path><circle cx="12" cy="12" r="2"></circle><circle cx="8" cy="16" r="1"></circle></svg></div><div class="info">
+<h3 class="plat-nom">La 4Fromages</h3>
+<span class="price">8000 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M21 3L3 12l9 9 9-18z"></path><circle cx="12" cy="12" r="2"></circle><circle cx="8" cy="16" r="1"></circle></svg></div><div class="info">
+<h3 class="plat-nom">Pizza au brie</h3>
+<span class="price">9000 FCFA</span>
+<p>Base crème, Figue sèche, Roquette, Brie, Mozzarela, Miel.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M21 3L3 12l9 9 9-18z"></path><circle cx="12" cy="12" r="2"></circle><circle cx="8" cy="16" r="1"></circle></svg></div><div class="info">
+<h3 class="plat-nom">Pizza Burata</h3>
+<span class="price">10000 FCFA</span>
+<p>Sauce tomate, Roquette, Burata.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M21 3L3 12l9 9 9-18z"></path><circle cx="12" cy="12" r="2"></circle><circle cx="8" cy="16" r="1"></circle></svg></div><div class="info">
+<h3 class="plat-nom">Pizza aux fruits de mer</h3>
+<span class="price">9000 FCFA</span>
+<p>Crevette, calamar, Moule, Sauce tomate, Mozzarella.</p>
+<button class="btn-add">Commander</button>
+</div></article></div>
+<div class="menu-item Pâtes"><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M2 12s4-4 10-4 10 4 10 4"></path><path d="M2 19s4-4 10-4 10 4 10 4"></path></svg></div><div class="info">
+<h3 class="plat-nom">Tagliatelles Contadina</h3>
+<span class="price">7000 FCFA</span>
+<p>Poulet, Crème fraiche, Champignons, Parmesan.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M2 12s4-4 10-4 10 4 10 4"></path><path d="M2 19s4-4 10-4 10 4 10 4"></path></svg></div><div class="info">
+<h3 class="plat-nom">Tagliatelles Pescatore</h3>
+<span class="price">7500 FCFA</span>
+<p>Aux crevettes à la crème fraiche.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M2 12s4-4 10-4 10 4 10 4"></path><path d="M2 19s4-4 10-4 10 4 10 4"></path></svg></div><div class="info">
+<h3 class="plat-nom">Penne à l'arrabiata</h3>
+<span class="price">5000 FCFA</span>
+<p>Avec sauce tomate piquante, Olives noires, Basilic.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M2 12s4-4 10-4 10 4 10 4"></path><path d="M2 19s4-4 10-4 10 4 10 4"></path></svg></div><div class="info">
+<h3 class="plat-nom">Spaghettis Pomodoro</h3>
+<span class="price">5500 FCFA</span>
+<p>Tomates fraiches, Ail, Huile d'olive.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M2 12s4-4 10-4 10 4 10 4"></path><path d="M2 19s4-4 10-4 10 4 10 4"></path></svg></div><div class="info">
+<h3 class="plat-nom">Spaghettis Bolognaise</h3>
+<span class="price">6000 FCFA</span>
+<p>Viande de boeuf et légumes.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M2 12s4-4 10-4 10 4 10 4"></path><path d="M2 19s4-4 10-4 10 4 10 4"></path></svg></div><div class="info">
+<h3 class="plat-nom">Lasagnes</h3>
+<span class="price">6000 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M2 12s4-4 10-4 10 4 10 4"></path><path d="M2 19s4-4 10-4 10 4 10 4"></path></svg></div><div class="info">
+<h3 class="plat-nom">Spaghettis</h3>
+<span class="price">6000 FCFA</span>
+<p>Sauce tomate, crevettes, Gambas, Moule, Calamar.</p>
+<button class="btn-add">Commander</button>
+</div></article></div>
+<div class="menu-item BurgersDuChef"><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M3 7h18v4H3z"></path><path d="M5 11v6c0 1 1 2 2 2h10c1 0 2-1 2-2v-6"></path></svg></div><div class="info">
+<h3 class="plat-nom">Truffle Burger</h3>
+<span class="price">7000 FCFA</span>
+<p>Viande hachée pur boeuf 130 G, Sauce Mayo à la truffe, Laitue, Cheddar.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M3 7h18v4H3z"></path><path d="M5 11v6c0 1 1 2 2 2h10c1 0 2-1 2-2v-6"></path></svg></div><div class="info">
+<h3 class="plat-nom">Swiss Burger</h3>
+<span class="price">7000 FCFA</span>
+<p>Viande hachée pur boeuf 130G, Champignons frais, Oignons caramélisé, Fromage Swiss.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M3 7h18v4H3z"></path><path d="M5 11v6c0 1 1 2 2 2h10c1 0 2-1 2-2v-6"></path></svg></div><div class="info">
+<h3 class="plat-nom">Smoked Turkey Burger</h3>
+<span class="price">6500 FCFA</span>
+<p>Viande hachée pur boeuf 130G, Mayonnaise, Laitue, Tomate, Dinde fumé, Cheddar.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M3 7h18v4H3z"></path><path d="M5 11v6c0 1 1 2 2 2h10c1 0 2-1 2-2v-6"></path></svg></div><div class="info">
+<h3 class="plat-nom">Crispy Spicy Burger</h3>
+<span class="price">6500 FCFA</span>
+<p>Blanc  de poulet pané, Mayonnaise épicé, Moutarde au miel, Laitue, Cheddar.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M3 7h18v4H3z"></path><path d="M5 11v6c0 1 1 2 2 2h10c1 0 2-1 2-2v-6"></path></svg></div><div class="info">
+<h3 class="plat-nom">Chicken Mexican Burger</h3>
+<span class="price">6500 FCFA</span>
+<p>Blanc de poulet grillé, Mayonnaise, Laitue, Tomate, Avocat, Cheddar, Jalapenos.</p>
+<button class="btn-add">Commander</button>
+</div></article></div>
+<div class="menu-item Burger_à_l'assiette"><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M3 12h18"></path><rect height="6" rx="2" width="20" x="2" y="3"></rect></svg></div><div class="info">
+<h3 class="plat-nom">American Cheese</h3>
+<span class="price">5000 FCFA</span>
+<p>Viande, Mayonnaise, Tomate, Oignons, Sauce Cocktail, Cheddar.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M3 12h18"></path><rect height="6" rx="2" width="20" x="2" y="3"></rect></svg></div><div class="info">
+<h3 class="plat-nom">Burger complet</h3>
+<span class="price">5000 FCFA</span>
+<p>Viande, Mayonnaise, Oeuf, Cornichons, Tomate, Oignons, Sauce Cocktail, Salade.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M3 12h18"></path><rect height="6" rx="2" width="20" x="2" y="3"></rect></svg></div><div class="info">
+<h3 class="plat-nom">Assiette de frites</h3>
+<span class="price">2000 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article></div>
+<div class="menu-item LesPlats"><h3>Les Volailles</h3><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l4 8H8z"></path><path d="M2 13h20v8H2z"></path></svg></div><div class="info">
+<h3 class="plat-nom">1/2 Poulet Desossé</h3>
+<span class="price">7500 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l4 8H8z"></path><path d="M2 13h20v8H2z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Poulet Desossé Entier</h3>
+<span class="price">14000 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l4 8H8z"></path><path d="M2 13h20v8H2z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Poulet Florida</h3>
+<span class="price">7500 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l4 8H8z"></path><path d="M2 13h20v8H2z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Poulet Mexicain</h3>
+<span class="price">7500 FCFA</span>
+<p>Blanc de poulet, Poivrons, Oignons au grill, Fromage.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l4 8H8z"></path><path d="M2 13h20v8H2z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Poulet Crispy</h3>
+<span class="price">7500 FCFA</span>
+<p>Escalope de poulet pané, Salade de choux, Cornichons, Sauce cocktail.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l4 8H8z"></path><path d="M2 13h20v8H2z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Poulet Francisco</h3>
+<span class="price">7500 FCFA</span>
+<p>Escalope de poulet, Salade de choux, Salade, Tomates, Fromage, Mayonnaise.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l4 8H8z"></path><path d="M2 13h20v8H2z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Poulet Fajita</h3>
+<span class="price">7500 FCFA</span>
+<p>Escalope de poulet, Salade, Sauce Avocat, Fromage.</p>
+<button class="btn-add">Commander</button>
+</div></article></div>
+<div class="menu-item LesViandes"><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M4 21v-7"></path><path d="M20 21v-7"></path><path d="M4 10h16"></path></svg></div><div class="info">
+<h3 class="plat-nom">Steak Sab</h3>
+<span class="price">7500 FCFA</span>
+<p>Emincé de Boeuf, Champignons, Mozzarela.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M4 21v-7"></path><path d="M20 21v-7"></path><path d="M4 10h16"></path></svg></div><div class="info">
+<h3 class="plat-nom">Steak Florida</h3>
+<span class="price">7500 FCFA</span>
+<p>Emincé de boeuf, Crème fraiche, Oignons, Cheddar.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M4 21v-7"></path><path d="M20 21v-7"></path><path d="M4 10h16"></path></svg></div><div class="info">
+<h3 class="plat-nom">Steak Philadelphia</h3>
+<span class="price">7500 FCFA</span>
+<p>Emincé  de  boeuf, Poivrons, Oignons, Tomates au grill, Fromage.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M4 21v-7"></path><path d="M20 21v-7"></path><path d="M4 10h16"></path></svg></div><div class="info">
+<h3 class="plat-nom">Chawarma viande</h3>
+<span class="price">7500 FCFA</span>
+<p>Persil, Oignons, Tomates, Sauce toractor.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M4 21v-7"></path><path d="M20 21v-7"></path><path d="M4 10h16"></path></svg></div><div class="info">
+<h3 class="plat-nom">Filet de boeuf au grill</h3>
+<span class="price">1200 FCFA</span>
+<p>Emincé  de  boeuf, Poivrons, Oignons, Tomates au grill, Fromage.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M4 21v-7"></path><path d="M20 21v-7"></path><path d="M4 10h16"></path></svg></div><div class="info">
+<h3 class="plat-nom">Quessadillas Cheese Steak</h3>
+<span class="price">7000 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M4 21v-7"></path><path d="M20 21v-7"></path><path d="M4 10h16"></path></svg></div><div class="info">
+<h3 class="plat-nom">Tomahauwk</h3>
+<span class="price">12000 FCFA</span>
+<p>Cote de boeuf importée, légumes sautés,Widges, Sauce champigons.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M4 21v-7"></path><path d="M20 21v-7"></path><path d="M4 10h16"></path></svg></div><div class="info">
+<h3 class="plat-nom">L'entrecote</h3>
+<span class="price">12000 FCFA</span>
+<p>Entrecote de boeuf importée, légumes sautés,Widges, Sauce aux poivres.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M4 21v-7"></path><path d="M20 21v-7"></path><path d="M4 10h16"></path></svg></div><div class="info">
+<h3 class="plat-nom">Lahme Fakhara</h3>
+<span class="price">9000 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article></div>
+<div class="menu-item LesGrillades"><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M2 7h20"></path><path d="M7 7v14"></path><path d="M17 7v14"></path></svg></div><div class="info">
+<h3 class="plat-nom">Brochette de viande</h3>
+<span class="price">8500 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M2 7h20"></path><path d="M7 7v14"></path><path d="M17 7v14"></path></svg></div><div class="info">
+<h3 class="plat-nom">Brochette Taouk</h3>
+<span class="price">8500 FCFA</span>
+<p>Poulet mariné aux épices et citron</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M2 7h20"></path><path d="M7 7v14"></path><path d="M17 7v14"></path></svg></div><div class="info">
+<h3 class="plat-nom">Brochette Kafta</h3>
+<span class="price">7500 FCFA</span>
+<p>Viannde hachée aux persils et oignons.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M2 7h20"></path><path d="M7 7v14"></path><path d="M17 7v14"></path></svg></div><div class="info">
+<h3 class="plat-nom">Brochette Mixte</h3>
+<span class="price">8500 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M2 7h20"></path><path d="M7 7v14"></path><path d="M17 7v14"></path></svg></div><div class="info">
+<h3 class="plat-nom">1/2 Poulet au feu de bois</h3>
+<span class="price">7500 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M2 7h20"></path><path d="M7 7v14"></path><path d="M17 7v14"></path></svg></div><div class="info">
+<h3 class="plat-nom">Poulet entier au feu de bois</h3>
+<span class="price">14000 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M2 7h20"></path><path d="M7 7v14"></path><path d="M17 7v14"></path></svg></div><div class="info">
+<h3 class="plat-nom">Poulet à la broche</h3>
+<span class="price">14000 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article></div>
+<div class="menu-item Poissons_Et_Crustacés"><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M4 12s4-5 12-5 4 5 4 5-4 5-12 5S4 12 4 12z"></path><circle cx="12" cy="12" r="1"></circle></svg></div><div class="info">
+<h3 class="plat-nom">Filet de poisson au grill</h3>
+<span class="price">11000 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M4 12s4-5 12-5 4 5 4 5-4 5-12 5S4 12 4 12z"></path><circle cx="12" cy="12" r="1"></circle></svg></div><div class="info">
+<h3 class="plat-nom">Gambas au grill</h3>
+<span class="price">13000 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article></div>
+<div class="menu-item Sandwiches_A_l'assiette"><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M2 6h20v4H2z"></path><path d="M2 14h20v4H2z"></path></svg></div><div class="info">
+<h3 class="plat-nom">L'oriental</h3>
+<span class="price">5500 FCFA</span>
+<p>Poulet pané, Dinde, Fromage, Salade verte, Champignons, Cheddar, Tomates.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M2 6h20v4H2z"></path><path d="M2 14h20v4H2z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Le Florida Poulet</h3>
+<span class="price">5000 FCFA</span>
+<p>Poulet, Crème fraiche, Oignons grillés, Cheddar.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M2 6h20v4H2z"></path><path d="M2 14h20v4H2z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Le Florida Viande</h3>
+<span class="price">5000 FCFA</span>
+<p>Viande, Crème fraiche, Oignons grillés, Cheddar.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M2 6h20v4H2z"></path><path d="M2 14h20v4H2z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Le Fajita Poulet</h3>
+<span class="price">5000 FCFA</span>
+<p>Poulet, Oignons, Poivres grillés,Champignons, Fromage, Pain français.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M2 6h20v4H2z"></path><path d="M2 14h20v4H2z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Le Steak Sab</h3>
+<span class="price">5000 FCFA</span>
+<p>Viande, Champignons, Oignons grillés, Fromage.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M2 6h20v4H2z"></path><path d="M2 14h20v4H2z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Le maria poulet</h3>
+<span class="price">5000 FCFA</span>
+<p>Poulet, Oignons, Poivrons grillés, Mozzarella, Cheddar, Pain tortilla.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M2 6h20v4H2z"></path><path d="M2 14h20v4H2z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Le maria viande</h3>
+<span class="price">5000 FCFA</span>
+<p>Viande, Oignons, Poivrons grillés, Mozzarella, Cheddar, Pain tortilla.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M2 6h20v4H2z"></path><path d="M2 14h20v4H2z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Le Boucher</h3>
+<span class="price">6000 FCFA</span>
+<p>Filet de boeuf, Salade, Tomates, Oeuf, Mozzarella, Dinde, Sauce cocktail et sauce avocat.</p>
+<button class="btn-add">Commander</button>
+</div></article></div>
+<div class="menu-item Desserts"><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2s4 4 4 8-4 6-4 6-4-3-4-6 4-8 4-8z"></path><path d="M6 20h12"></path></svg></div><div class="info">
+<h3 class="plat-nom">Assiette de profitéroles (4pcs)</h3>
+<span class="price">4000 FCFA</span>
+<p>Crème patisserie à la glace, Nutella  pistache, Choco blanc.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2s4 4 4 8-4 6-4 6-4-3-4-6 4-8 4-8z"></path><path d="M6 20h12"></path></svg></div><div class="info">
+<h3 class="plat-nom">Assiette à partager</h3>
+<span class="price">8000 FCFA</span>
+<p>2 pcs profitérole à la crème fraiche, 4 pcs Brownie, 4 pcs mini pain perdu, mini gauffre, nutella.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2s4 4 4 8-4 6-4 6-4-3-4-6 4-8 4-8z"></path><path d="M6 20h12"></path></svg></div><div class="info">
+<h3 class="plat-nom">Brownie sticks</h3>
+<span class="price">4000 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2s4 4 4 8-4 6-4 6-4-3-4-6 4-8 4-8z"></path><path d="M6 20h12"></path></svg></div><div class="info">
+<h3 class="plat-nom">Croissant glacé</h3>
+<span class="price">5500 FCFA</span>
+<p>Croissant glacé, Sauce vanille, Sauce pistache, Nutella.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2s4 4 4 8-4 6-4 6-4-3-4-6 4-8 4-8z"></path><path d="M6 20h12"></path></svg></div><div class="info">
+<h3 class="plat-nom">Pain perdu</h3>
+<span class="price">4000 FCFA</span>
+<p>SAuce vanille, Caramel, 1 boule de glace.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2s4 4 4 8-4 6-4 6-4-3-4-6 4-8 4-8z"></path><path d="M6 20h12"></path></svg></div><div class="info">
+<h3 class="plat-nom">Spéciale orientale</h3>
+<span class="price">6500 FCFA</span>
+<p>Crepe, profitérole à la crème chantilly, Nutella.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2s4 4 4 8-4 6-4 6-4-3-4-6 4-8 4-8z"></path><path d="M6 20h12"></path></svg></div><div class="info">
+<h3 class="plat-nom">Fondant au chocolat</h3>
+<span class="price">5000 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2s4 4 4 8-4 6-4 6-4-3-4-6 4-8 4-8z"></path><path d="M6 20h12"></path></svg></div><div class="info">
+<h3 class="plat-nom">Fondant au caramel</h3>
+<span class="price">5000 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article></div>
+<div class="menu-item Gauffres"><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><rect height="18" rx="2" width="18" x="3" y="3"></rect><path d="M12 3v18M3 12h18"></path></svg></div><div class="info">
+<h3 class="plat-nom">Gauffre aux snickers</h3>
+<span class="price">5500 FCFA</span>
+<p>Crème chantilly, Cacahuète, Caramel, Nutella.</p>
+<button class="btn-add">Commander</button>
+</div></article></div>
+<div class="menu-item Pancakes"><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><ellipse cx="12" cy="8" rx="7" ry="3"></ellipse><ellipse cx="12" cy="15" rx="7" ry="3"></ellipse></svg></div><div class="info">
+<h3 class="plat-nom">Pancake gourmand</h3>
+<span class="price">6000 FCFA</span>
+<p>Crème chantilly, cacahuète, Caramel, Nutella.</p>
+<button class="btn-add">Commander</button>
+</div></article></div>
+<div class="menu-item Crêpes"><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M2 12a10 10 0 1 0 20 0 10 10 0 0 0-20 0z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Crepe gourmand</h3>
+<span class="price">6000 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M2 12a10 10 0 1 0 20 0 10 10 0 0 0-20 0z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Brownie crepe</h3>
+<span class="price">5500 FCFA</span>
+<p>Brownie, Nutella, Choco noir et blanc.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M2 12a10 10 0 1 0 20 0 10 10 0 0 0-20 0z"></path></svg></div><div class="info">
+<h3 class="plat-nom">New Fettucini</h3>
+<span class="price">6000 FCFA</span>
+<p>Crepe, 3 chocos, Marshmallow, Brownie, Chantilly, Noisette, Nutella.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M2 12a10 10 0 1 0 20 0 10 10 0 0 0-20 0z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Fettucini au cacao</h3>
+<span class="price">5500 FCFA</span>
+<p>Crepe au cacao, brownie, Chantilly, Noisette, Nutella.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M2 12a10 10 0 1 0 20 0 10 10 0 0 0-20 0z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Crepe glacée à la pistache</h3>
+<span class="price">5500 FCFA</span>
+<p>Crepe au cacao, Glace à la pistache, Nutella, Pistache.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M2 12a10 10 0 1 0 20 0 10 10 0 0 0-20 0z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Crepe auux cookies</h3>
+<span class="price">6000 FCFA</span>
+<p>Crepe, Cookies concassés, Nutella.</p>
+<button class="btn-add">Commander</button>
+</div></article></div>
+<div class="menu-item Milkshake"><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M6 2h12l-2 10H8z"></path><path d="M10 22h4"></path></svg></div><div class="info">
+<h3 class="plat-nom">Classique</h3>
+<span class="price">3000 FCFA</span>
+<p>Vanille, Chocolat ou Fraise.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M6 2h12l-2 10H8z"></path><path d="M10 22h4"></path></svg></div><div class="info">
+<h3 class="plat-nom">Banane</h3>
+<span class="price">3000 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M6 2h12l-2 10H8z"></path><path d="M10 22h4"></path></svg></div><div class="info">
+<h3 class="plat-nom">Nutella</h3>
+<span class="price">3500 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M6 2h12l-2 10H8z"></path><path d="M10 22h4"></path></svg></div><div class="info">
+<h3 class="plat-nom">Kinder</h3>
+<span class="price">3500 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M6 2h12l-2 10H8z"></path><path d="M10 22h4"></path></svg></div><div class="info">
+<h3 class="plat-nom">Oréo</h3>
+<span class="price">3500 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M6 2h12l-2 10H8z"></path><path d="M10 22h4"></path></svg></div><div class="info">
+<h3 class="plat-nom">Lotus</h3>
+<span class="price">3500 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M6 2h12l-2 10H8z"></path><path d="M10 22h4"></path></svg></div><div class="info">
+<h3 class="plat-nom">Mars</h3>
+<span class="price">3500 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M6 2h12l-2 10H8z"></path><path d="M10 22h4"></path></svg></div><div class="info">
+<h3 class="plat-nom">Bounty</h3>
+<span class="price">3500 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M6 2h12l-2 10H8z"></path><path d="M10 22h4"></path></svg></div><div class="info">
+<h3 class="plat-nom">Protéiné</h3>
+<span class="price">4500 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article></div>
+<div class="menu-item CocktailsDuChef"><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M3 3h18"></path><path d="M12 3v18"></path></svg></div><div class="info">
+<h3 class="plat-nom">Le Pink Banana</h3>
+<span class="price">4500 FCFA</span>
+<p>Mangue, Fraise, Banane et Lait.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M3 3h18"></path><path d="M12 3v18"></path></svg></div><div class="info">
+<h3 class="plat-nom">Salade de fruits frais</h3>
+<span class="price">4000 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M3 3h18"></path><path d="M12 3v18"></path></svg></div><div class="info">
+<h3 class="plat-nom">Fresh Fruits Cocktails</h3>
+<span class="price">5000 FCFA</span>
+<p>Jus de mangue, Fraise, Achta, Pistachhe et Miel.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M3 3h18"></path><path d="M12 3v18"></path></svg></div><div class="info">
+<h3 class="plat-nom">L'avocado</h3>
+<span class="price">5500 FCFA</span>
+<p>Avocat, Achata, Amendes, Miel et Pistaches.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M3 3h18"></path><path d="M12 3v18"></path></svg></div><div class="info">
+<h3 class="plat-nom">Le Banana</h3>
+<span class="price">4000 FCFA</span>
+<p>Banane, Lait et Miel.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M3 3h18"></path><path d="M12 3v18"></path></svg></div><div class="info">
+<h3 class="plat-nom">L'Oriental</h3>
+<span class="price">5500 FCFA</span>
+<p>Jus de fraises, Morceaux de fruits frais, Achta et Miel.</p>
+<button class="btn-add">Commander</button>
+</div></article></div>
+<div class="menu-item Mocktails"><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l4 10H8z"></path><path d="M12 12v10"></path></svg></div><div class="info">
+<h3 class="plat-nom">Le Hot Litchi</h3>
+<span class="price">3500 FCFA</span>
+<p>Pomme verte, Litchi et Piment.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l4 10H8z"></path><path d="M12 12v10"></path></svg></div><div class="info">
+<h3 class="plat-nom">Bloody Marry</h3>
+<span class="price">3500 FCFA</span>
+<p>Tomate, Piment, Poivre et Sel.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l4 10H8z"></path><path d="M12 12v10"></path></svg></div><div class="info">
+<h3 class="plat-nom">Le Passion</h3>
+<span class="price">4000 FCFA</span>
+<p>Purée de passion, Fraise, Orange et Citron.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l4 10H8z"></path><path d="M12 12v10"></path></svg></div><div class="info">
+<h3 class="plat-nom">Le Fresh</h3>
+<span class="price">4000 FCFA</span>
+<p>RedBull, Mangue et Passion.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l4 10H8z"></path><path d="M12 12v10"></path></svg></div><div class="info">
+<h3 class="plat-nom">SunRise</h3>
+<span class="price">4000 FCFA</span>
+<p>Grenadine, Pamplemousse, Orange et Ananas.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l4 10H8z"></path><path d="M12 12v10"></path></svg></div><div class="info">
+<h3 class="plat-nom">Strawberry Gum</h3>
+<span class="price">4000 FCFA</span>
+<p>Sirop de Chewing-Gum, Fraise et RedBull.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l4 10H8z"></path><path d="M12 12v10"></path></svg></div><div class="info">
+<h3 class="plat-nom">Frozen Margarita</h3>
+<span class="price">4000 FCFA</span>
+<p>Orange, Citron, Grenadine et Pamplemousse.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l4 10H8z"></path><path d="M12 12v10"></path></svg></div><div class="info">
+<h3 class="plat-nom">Virgin Mojito</h3>
+<span class="price">4000 FCFA</span>
+<p>Sprite, Sucre brun, Menthe fraiche,  Citron et Sirop de canne.</p>
+<button class="btn-add">Commander</button>
+</div></article></div>
+<div class="menu-item Smoothies"><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M6 2h12l-2 14H8z"></path><path d="M9 21h6"></path></svg></div><div class="info">
+<h3 class="plat-nom">Peach on the beach</h3>
+<span class="price">4000 FCFA</span>
+<p>Jus d'orange, purée de pèche, Pamplemousse et Grenadine.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M6 2h12l-2 14H8z"></path><path d="M9 21h6"></path></svg></div><div class="info">
+<h3 class="plat-nom">Virgin Pina Colada</h3>
+<span class="price">4000 FCFA</span>
+<p>Ananas, Vanille et Coco.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M6 2h12l-2 14H8z"></path><path d="M9 21h6"></path></svg></div><div class="info">
+<h3 class="plat-nom">Le Blue Hawaien</h3>
+<span class="price">4000 FCFA</span>
+<p>Jus de citron, Coco, Purée d'ananas et curacao.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M6 2h12l-2 14H8z"></path><path d="M9 21h6"></path></svg></div><div class="info">
+<h3 class="plat-nom">Le Tutti Frutti</h3>
+<span class="price">4000 FCFA</span>
+<p>Jus d'orange, Jus d'ananas, purée de Myrtilles et Fruits rouges.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M6 2h12l-2 14H8z"></path><path d="M9 21h6"></path></svg></div><div class="info">
+<h3 class="plat-nom">Le Tropical</h3>
+<span class="price">4000 FCFA</span>
+<p>Purée de mangue, Ananas, Passion et Coco.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M6 2h12l-2 14H8z"></path><path d="M9 21h6"></path></svg></div><div class="info">
+<h3 class="plat-nom">Le Exotique</h3>
+<span class="price">4000 FCFA</span>
+<p>Purée de mangue, Ananas et Passion.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M6 2h12l-2 14H8z"></path><path d="M9 21h6"></path></svg></div><div class="info">
+<h3 class="plat-nom">Le Solo</h3>
+<span class="price">4000 FCFA</span>
+<p>Pèche, Mangue, Fraise ou Passion au choix.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M6 2h12l-2 14H8z"></path><path d="M9 21h6"></path></svg></div><div class="info">
+<h3 class="plat-nom">Funky Monkey</h3>
+<span class="price">4000 FCFA</span>
+<p>Coco, Choclat et Banane.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M6 2h12l-2 14H8z"></path><path d="M9 21h6"></path></svg></div><div class="info">
+<h3 class="plat-nom">Summer Peach</h3>
+<span class="price">4000 FCFA</span>
+<p>Mangue, Passion et peche.</p>
+<button class="btn-add">Commander</button>
+</div></article></div>
+<div class="menu-item SoftDrinks"><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M8 2h8v12H8z"></path><path d="M12 14v8"></path></svg></div><div class="info">
+<h3 class="plat-nom">Coca</h3>
+<span class="price">1500 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M8 2h8v12H8z"></path><path d="M12 14v8"></path></svg></div><div class="info">
+<h3 class="plat-nom">Fanta</h3>
+<span class="price">1500 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M8 2h8v12H8z"></path><path d="M12 14v8"></path></svg></div><div class="info">
+<h3 class="plat-nom">Sprite</h3>
+<span class="price">1500 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M8 2h8v12H8z"></path><path d="M12 14v8"></path></svg></div><div class="info">
+<h3 class="plat-nom">Vimto</h3>
+<span class="price">1500 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M8 2h8v12H8z"></path><path d="M12 14v8"></path></svg></div><div class="info">
+<h3 class="plat-nom">Coca Zéro</h3>
+<span class="price">1500 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M8 2h8v12H8z"></path><path d="M12 14v8"></path></svg></div><div class="info">
+<h3 class="plat-nom">Schwepps Agrume</h3>
+<span class="price">1500 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M8 2h8v12H8z"></path><path d="M12 14v8"></path></svg></div><div class="info">
+<h3 class="plat-nom">Schwepps Citron</h3>
+<span class="price">1500 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M8 2h8v12H8z"></path><path d="M12 14v8"></path></svg></div><div class="info">
+<h3 class="plat-nom">Pepsi</h3>
+<span class="price">1500 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M8 2h8v12H8z"></path><path d="M12 14v8"></path></svg></div><div class="info">
+<h3 class="plat-nom">Pepsi Max</h3>
+<span class="price">1500 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M8 2h8v12H8z"></path><path d="M12 14v8"></path></svg></div><div class="info">
+<h3 class="plat-nom">Seven Up</h3>
+<span class="price">1500 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M8 2h8v12H8z"></path><path d="M12 14v8"></path></svg></div><div class="info">
+<h3 class="plat-nom">Thé glacé maison Pèche</h3>
+<span class="price">2500 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M8 2h8v12H8z"></path><path d="M12 14v8"></path></svg></div><div class="info">
+<h3 class="plat-nom">Thé glacé maison Citron</h3>
+<span class="price">2500 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M8 2h8v12H8z"></path><path d="M12 14v8"></path></svg></div><div class="info">
+<h3 class="plat-nom">Perrier</h3>
+<span class="price">1500 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M8 2h8v12H8z"></path><path d="M12 14v8"></path></svg></div><div class="info">
+<h3 class="plat-nom">RedBull</h3>
+<span class="price">2000 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M8 2h8v12H8z"></path><path d="M12 14v8"></path></svg></div><div class="info">
+<h3 class="plat-nom">Eau Kirène PM</h3>
+<span class="price">1000 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M8 2h8v12H8z"></path><path d="M12 14v8"></path></svg></div><div class="info">
+<h3 class="plat-nom">Eau Kirène GM</h3>
+<span class="price">1500 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M8 2h8v12H8z"></path><path d="M12 14v8"></path></svg></div><div class="info">
+<h3 class="plat-nom">Eau Pierval PM</h3>
+<span class="price">1000 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M8 2h8v12H8z"></path><path d="M12 14v8"></path></svg></div><div class="info">
+<h3 class="plat-nom">Eau Pierval GM</h3>
+<span class="price">1000 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M8 2h8v12H8z"></path><path d="M12 14v8"></path></svg></div><div class="info">
+<h3 class="plat-nom">Eau Gazeuse</h3>
+<span class="price">Z000 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article></div>
+<div class="menu-item HotDrinks"><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l4 8H8z"></path><path d="M2 13h20v8H2z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Expresso</h3>
+<span class="price">2000 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l4 8H8z"></path><path d="M2 13h20v8H2z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Double Expresso</h3>
+<span class="price">3000 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l4 8H8z"></path><path d="M2 13h20v8H2z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Café turc</h3>
+<span class="price">2500 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l4 8H8z"></path><path d="M2 13h20v8H2z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Chocolat Chaud</h3>
+<span class="price">2500 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l4 8H8z"></path><path d="M2 13h20v8H2z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Café Latté</h3>
+<span class="price">3000 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l4 8H8z"></path><path d="M2 13h20v8H2z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Moka Latté</h3>
+<span class="price">3500 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l4 8H8z"></path><path d="M2 13h20v8H2z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Cappucino</h3>
+<span class="price">3000 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l4 8H8z"></path><path d="M2 13h20v8H2z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Thé au choix</h3>
+<span class="price">2000 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l4 8H8z"></path><path d="M2 13h20v8H2z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Thé arabe</h3>
+<span class="price">2000 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l4 8H8z"></path><path d="M2 13h20v8H2z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Caramel Macchiato</h3>
+<span class="price">3500 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l4 8H8z"></path><path d="M2 13h20v8H2z"></path></svg></div><div class="info">
+<h3 class="plat-nom">American Coffee</h3>
+<span class="price">3000 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l4 8H8z"></path><path d="M2 13h20v8H2z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Nescafé</h3>
+<span class="price">2500 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l4 8H8z"></path><path d="M2 13h20v8H2z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Gingembre au miel</h3>
+<span class="price">2000 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l4 8H8z"></path><path d="M2 13h20v8H2z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Théière (4 Tasses)</h3>
+<span class="price">4000 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l4 8H8z"></path><path d="M2 13h20v8H2z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Théière (6 Tasses)</h3>
+<span class="price">6000 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article></div>
+<div class="menu-item LesFrapppés"><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l4 8H8z"></path><path d="M2 13h20v8H2z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Frappicino classique</h3>
+<span class="price">3000 FCFA</span>
+<p>Lait, Café, Vanille, Glaçons et Chantilly.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l4 8H8z"></path><path d="M2 13h20v8H2z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Ice Coffee</h3>
+<span class="price">3000 FCFA</span>
+<p>Café, Lait, Glaçons et Sirop de sucre.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l4 8H8z"></path><path d="M2 13h20v8H2z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Frappicino classique</h3>
+<span class="price">3000 FCFA</span>
+<p>Lait, Café, Vanille, Glaçons et Chantilly.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l4 8H8z"></path><path d="M2 13h20v8H2z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Moka frappé</h3>
+<span class="price">3500 FCFA</span>
+<p>Chocolat noir, Café, Lait, Glaçons et Chantilly.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l4 8H8z"></path><path d="M2 13h20v8H2z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Caramel frappé</h3>
+<span class="price">3500 FCFA</span>
+<p>Sucre, Caramel, Café, Lait, Glaçons et Chantilly.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l4 8H8z"></path><path d="M2 13h20v8H2z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Café Latté</h3>
+<span class="price">3500 FCFA</span>
+<p>Hazelnut frappé.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l4 8H8z"></path><path d="M2 13h20v8H2z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Hazelnut Frappé</h3>
+<span class="price">3500 FCFA</span>
+<p>Sirop d'amende, Sirop de noisettes, Lait et café.</p>
+<button class="btn-add">Commander</button>
+</div></article></div>
+<div class="menu-item Jus_de_FruitsFrais"><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l4 8H8z"></path><path d="M2 13h20v8H2z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Orange pressé</h3>
+<span class="price">3000 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l4 8H8z"></path><path d="M2 13h20v8H2z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Citron pressé</h3>
+<span class="price">3000 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l4 8H8z"></path><path d="M2 13h20v8H2z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Pamplemousse pressé</h3>
+<span class="price">3000 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l4 8H8z"></path><path d="M2 13h20v8H2z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Jus de mangue</h3>
+<span class="price">3500 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l4 8H8z"></path><path d="M2 13h20v8H2z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Jus de Fraise</h3>
+<span class="price">3500 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l4 8H8z"></path><path d="M2 13h20v8H2z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Citronnade à la menthe</h3>
+<span class="price">3500 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l4 8H8z"></path><path d="M2 13h20v8H2z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Jus de Pomme</h3>
+<span class="price">3000 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l4 8H8z"></path><path d="M2 13h20v8H2z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Jus de Carotte</h3>
+<span class="price">3000 FCFA</span>
+<button class="btn-add">Commander</button>
+</div></article></div>
+<div class="menu-item jusLocaux"><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l4 8H8z"></path><path d="M2 13h20v8H2z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Jus de bissap</h3>
+<span class="price">1500 FCFA</span>
+<p>Frais et naturel, fait maison.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l4 8H8z"></path><path d="M2 13h20v8H2z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Jus de bouye</h3>
+<span class="price">1500 FCFA</span>
+<p>Frais et naturel, fait maison.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l4 8H8z"></path><path d="M2 13h20v8H2z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Jus de ditakh</h3>
+<span class="price">1500 FCFA</span>
+<p>Frais et naturel, fait maison.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l4 8H8z"></path><path d="M2 13h20v8H2z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Jus de tamarin</h3>
+<span class="price">1500 FCFA</span>
+<p>Frais et naturel, fait maison.</p>
+<button class="btn-add">Commander</button>
+</div></article><article class="dish"><div class="icon"><svg fill="none" height="28" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l4 8H8z"></path><path d="M2 13h20v8H2z"></path></svg></div><div class="info">
+<h3 class="plat-nom">Jus de gingembre</h3>
+<span class="price">1500 FCFA</span>
+<p>Frais et naturel, fait maison.</p>
+<button class="btn-add">Commander</button>
+</div></article></div>
+</main>
+<!-- Popup confirmation -->
+<div aria-hidden="true" aria-modal="true" class="popup" id="orderPopup" role="dialog">
+<div class="popup-card" role="document">
+<h3>Détails de votre commande</h3>
+<ul class="popup-list" id="popupOrderDetails"></ul>
+<div class="popup-footer">
+<div style="display:flex;justify-content:space-between;font-weight:700"><span>Total</span><span id="popupTotal">0 FCFA</span></div>
+<div class="phone-note">Veuillez appeler un serveur proche afin de prendre votre commande.</div>
+<div style="display:flex;gap:8px;margin-top:8px">
+<button id="popupClose" style="flex:1;padding:8px;border-radius:8px;border:0;background:#0b3b66;color:#fff">Fermer</button>
+<button id="popupPrint" style="flex:1;padding:8px;border-radius:8px;border:0;background:#06b6d4;color:#06202b">Imprimer / Copier</button>
+</div>
+</div>
+</div>
+</div>
+<script>
+    // Cart logic
+    const cartBtn = document.getElementById('cartBtn');
+    const cartPanel = document.getElementById('cartPanel');
+    const cartCountEl = document.getElementById('cartCount');
+    const cartItemsEl = document.getElementById('cartItems');
+    const cartTotalEl = document.getElementById('cartTotal');
+
+    const confirmOrderBtn = document.getElementById('confirmOrder');
+    const resumeOrderBtn = document.getElementById('resumeOrder');
+    const cancelOrderBtn = document.getElementById('cancelOrder');
+
+    const popup = document.getElementById('orderPopup');
+    const popupDetails = document.getElementById('popupOrderDetails');
+    const popupTotal = document.getElementById('popupTotal');
+    const popupClose = document.getElementById('popupClose');
+    const popupPrint = document.getElementById('popupPrint');
+
+    let cart = [];
+    try {
+      const saved = JSON.parse(localStorage.getItem('restaurantCart') || '[]');
+      if (Array.isArray(saved)) cart = saved;
+    } catch(e){ cart = []; }
+
+    function saveCart(){ localStorage.setItem('restaurantCart', JSON.stringify(cart)); }
+    function formatFCFA(n){ return n.toLocaleString('fr-FR') + ' FCFA'; }
+    function calcTotal(){ return cart.reduce((s,it)=> s + (it.price * it.qty), 0); }
+    function updateBadge(){ const totalItems = cart.reduce((s,it)=> s + it.qty, 0); cartCountEl.textContent = totalItems; }
+
+    function renderCart(){
+      cartItemsEl.innerHTML = '';
+      if(cart.length === 0){
+        const empty = document.createElement('div');
+        empty.textContent = 'Votre panier est vide.';
+        empty.style.color = '#6b7280';
+        empty.style.padding = '8px 0';
+        cartItemsEl.appendChild(empty);
+      } else {
+        cart.forEach((it, idx) => {
+          const li = document.createElement('li');
+          li.className = 'cart-item';
+          const meta = document.createElement('div');
+          meta.className = 'meta';
+          const name = document.createElement('div');
+          name.className = 'name';
+          name.textContent = it.name;
+          const comment = document.createElement('div');
+          comment.className = 'comment';
+          comment.textContent = it.comment || '';
+          const price = document.createElement('div');
+          price.className = 'price';
+          price.textContent = formatFCFA(it.price);
+
+          meta.appendChild(name);
+          if(it.comment) meta.appendChild(comment);
+          meta.appendChild(price);
+
+          const controls = document.createElement('div');
+          controls.className = 'controls';
+
+          const minus = document.createElement('button'); minus.className='qty-btn'; minus.textContent='−';
+          minus.addEventListener('click', ()=>{ changeQty(idx, it.qty - 1); });
+
+          const qty = document.createElement('div'); qty.textContent = it.qty; qty.style.minWidth='24px'; qty.style.textAlign='center';
+
+          const plus = document.createElement('button'); plus.className='qty-btn'; plus.textContent='+';
+          plus.addEventListener('click', ()=>{ changeQty(idx, it.qty + 1); });
+
+          const remove = document.createElement('button'); remove.className='remove-btn'; remove.textContent='×';
+          remove.addEventListener('click', ()=>{ removeItem(idx); });
+
+          controls.appendChild(minus);
+          controls.appendChild(qty);
+          controls.appendChild(plus);
+          controls.appendChild(remove);
+
+          li.appendChild(meta);
+          li.appendChild(controls);
+          cartItemsEl.appendChild(li);
+        });
+      }
+      const total = calcTotal();
+      cartTotalEl.textContent = formatFCFA(total);
+      updateBadge();
+      saveCart();
+    }
+
+    function changeQty(idx, newQty){
+      if(newQty <= 0){ cart.splice(idx,1); } else { cart[idx].qty = newQty; }
+      renderCart();
+    }
+
+    function removeItem(idx){ cart.splice(idx,1); renderCart(); }
+
+    function addToCart(name, price, comment){
+      const id = name + '|' + price;
+      const found = cart.find(it=> it.id === id);
+      if(found){ found.qty += 1; } else { cart.push({id, name, price, comment: comment || '', qty: 1}); }
+      renderCart();
+      cartCountEl.animate([{transform:'scale(1)'},{transform:'scale(1.18)'},{transform:'scale(1)'}],{duration:350});
+    }
+
+    document.querySelectorAll('.btn-add').forEach(btn => {
+      btn.addEventListener('click', ()=>{
+        const info = btn.closest('.info');
+        if(!info) return;
+        const nameEl = info.querySelector('.plat-nom');
+        const priceEl = info.querySelector('.price');
+        const pEl = info.querySelector('p');
+        const name = nameEl ? nameEl.textContent.trim() : 'Plat';
+        const priceText = priceEl ? priceEl.textContent.replace(/[^0-9]/g,'') : '0';
+        const price = parseInt(priceText || '0', 10) || 0;
+        const comment = pEl ? pEl.textContent.trim() : '';
+        addToCart(name, price, comment);
+      });
+    });
+
+    cartBtn.addEventListener('click', (e)=>{ cartPanel.classList.toggle('active'); });
+
+    confirmOrderBtn.addEventListener('click', ()=>{
+      const total = calcTotal();
+      popupDetails.innerHTML = '';
+      if(cart.length === 0){ popupDetails.innerHTML = '<li>Panier vide</li>'; }
+      else {
+        cart.forEach(it=>{
+          const li = document.createElement('li');
+          li.textContent = it.qty + ' x ' + it.name;
+          const span = document.createElement('span');
+          span.textContent = formatFCFA(it.price * it.qty);
+          li.style.display = 'flex';
+          li.style.justifyContent = 'space-between';
+          li.appendChild(span);
+          popupDetails.appendChild(li);
+          if(it.comment){
+            const c = document.createElement('div');
+            c.style.fontSize='13px'; c.style.color='#6b7280'; c.style.marginTop='4px';
+            c.textContent = 'Note: ' + it.comment;
+            popupDetails.appendChild(c);
+          }
+        });
+      }
+      popupTotal.textContent = formatFCFA(total);
+      popup.classList.add('active'); popup.setAttribute('aria-hidden','false');
+    });
+
+    popupClose.addEventListener('click', ()=>{ popup.classList.remove('active'); popup.setAttribute('aria-hidden','true'); });
+
+    popupPrint.addEventListener('click', ()=>{
+      let text = 'Commande - L_Orientale\n\n';
+      cart.forEach(it=>{ text += `${it.qty} x ${it.name} - ${formatFCFA(it.price * it.qty)}\n`; });
+      text += '\nTotal: ' + formatFCFA(calcTotal()) + '\n\nVeuillez appeler un serveur proche afin de prendre votre commande.';
+      navigator.clipboard?.writeText(text).then(()=>{ alert('Détails de la commande copiés dans le presse-papier.'); }).catch(()=>{ alert('Impossible de copier.'); });
+    });
+
+    resumeOrderBtn.addEventListener('click', ()=>{ cartPanel.classList.remove('active'); });
+
+    cancelOrderBtn.addEventListener('click', ()=>{
+      if(confirm('Voulez-vous vraiment vider le panier ?')){ cart = []; renderCart(); }
+    });
+
+    document.addEventListener('keydown', (e)=>{
+      if(e.key === 'Escape'){
+        if(popup.classList.contains('active')) popup.classList.remove('active');
+        if(cartPanel.classList.contains('active')) cartPanel.classList.remove('active');
+      }
+    });
+
+    renderCart();
+  </script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const menuItems = Array.from(document.querySelectorAll(".menu-item"));
+  const filterWrap = document.getElementById("categoryFilter");
+  if (!filterWrap) return;
+
+  // Helper: get category from data-category or from classList (first meaningful class)
+  function getCategory(item) {
+    if (item.dataset && item.dataset.category) {
+      return item.dataset.category.trim();
+    }
+    // find first class that is not 'menu-item' and not utility names
+    const skip = new Set(["menu-item","hide","active"]);
+    for (const c of Array.from(item.classList)) {
+      if (!skip.has(c) && c.trim()) return c.trim();
+    }
+    return "Autre";
+  }
+
+  // Human-friendly label
+  function niceLabel(cat) {
+    if (!cat) return "Autre";
+    // replace underscores, dashes and camel case -> spaces then Title Case
+    let s = cat.replace(/[_-]+/g, " ").replace(/([a-z])([A-Z])/g, "$1 $2");
+    s = s.split(" ").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+    return s;
+  }
+
+  // Collect categories in order of appearance
+  const seen = new Set();
+  const categories = [];
+  for (const item of menuItems) {
+    const cat = getCategory(item);
+    if (!seen.has(cat)) { seen.add(cat); categories.push(cat); }
+  }
+
+  // Clear any pre-existing buttons
+  filterWrap.innerHTML = "";
+
+  // Add "Tous" button first
+  const allBtn = document.createElement("button");
+  allBtn.textContent = "Tous";
+  allBtn.classList.add("active");
+  allBtn.dataset.cat = "Tous";
+  filterWrap.appendChild(allBtn);
+
+  // Add category buttons
+  categories.forEach(cat => {
+    const btn = document.createElement("button");
+    btn.textContent = niceLabel(cat);
+    btn.dataset.cat = cat;
+    filterWrap.appendChild(btn);
+  });
+
+  // Click handler (event delegation)
+  filterWrap.addEventListener("click", (e) => {
+    const btn = e.target.closest("button");
+    if (!btn) return;
+    const selected = btn.dataset.cat;
+    // handle active classes
+    filterWrap.querySelectorAll("button").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    applyFilter(selected);
+  });
+
+  // Apply filter to menu items
+  function applyFilter(category) {
+    if (category === "Tous") {
+      menuItems.forEach(it => {
+        it.style.display = ""; // reset
+        requestAnimationFrame(() => it.classList.remove("hide"));
+      });
+      return;
+    }
+    menuItems.forEach(it => {
+      const cat = getCategory(it);
+      if (cat === category) {
+        it.style.display = "";
+        requestAnimationFrame(() => it.classList.remove("hide"));
+      } else {
+        // add hide for animation then set display none
+        it.classList.add("hide");
+        setTimeout(() => { it.style.display = "none"; }, 300);
+      }
+    });
+  }
+
+  // ensure everything visible initially
+  applyFilter("Tous");
+});
+</script></body>
+</html>
